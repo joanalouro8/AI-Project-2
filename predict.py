@@ -51,21 +51,21 @@ def print_predictions(predictions: dict[str, float]) -> None:
 if __name__ == "__main__":
 
     house = {
-        "bedrooms": 4,
+        "bedrooms": 2,
         "bathrooms": 2,
-        "floors": 2,
-        "sqft_living": 2590,
-        "sqft_lot": 3750,
-        "sqft_above": 2590,
+        "floors": 1,
+        "sqft_living": 1006,
+        "sqft_lot": 0,
+        "sqft_above": 1006,
         "sqft_basement": 0,
-        "waterfront": "N",
+        "waterfront": "Y",
         "view": 3,
-        "condition": "Very Good",
-        "grade": 11,
-        "yr_built": 1922,
-        "yr_renovated": 1922,
-        "lat": 47.6737467,
-        "long": -122.2961433,
+        "condition": "Good",
+        "grade": 8,
+        "yr_built": 1996,
+        "yr_renovated": 1996,
+        "lat": 47.6319718,
+        "long": -122.3569874,
     }
 
     print_predictions(predict(house))

@@ -273,13 +273,13 @@ def save_models(models: dict, X, y) -> None:
     for name, model in models.items():
         model.fit(X, y)
         filename = name.lower().replace(" ", "_")
-        joblib.dump(model, f"models/{filename}1.pkl")
+        joblib.dump(model, f"models/{filename}.pkl")
 
     joblib.dump(FEATURES, "models/features.pkl")
 
 
 def main() -> None:
-    X, y = load_data("house_prices1.csv")
+    X, y = load_data("house_prices.csv")
     models = create_models()
     scorers = create_scorers()
 

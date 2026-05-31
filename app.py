@@ -5,7 +5,7 @@ import pandas as pd
 from flask import Flask, render_template, request, jsonify
 
 from predict import load_features, load_models
-from cross_validation import build_features
+from models_training import build_features
 
 app = Flask(__name__)
 
