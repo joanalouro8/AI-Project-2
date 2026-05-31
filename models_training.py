@@ -58,6 +58,7 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
             .astype(str)
             .str.strip()
             .map({"Poor": 1, "Fair": 2, "Average": 3, "Good": 4, "Very Good": 5})
+            .fillna(pd.to_numeric(df["condition"], errors="coerce"))
         )
 
     if "waterfront" in df.columns:
@@ -66,7 +67,7 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
             .astype(str)
             .str.strip()
             .map({"Y": 1, "N": 0})
-            .fillna(df["waterfront"])
+            .fillna(pd.to_numeric(df["waterfront"], errors="coerce"))
         )
 
     return df

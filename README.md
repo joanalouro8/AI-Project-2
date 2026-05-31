@@ -38,7 +38,7 @@ Trains all six models with 5-fold cross-validation and saves them to `models/`.
 
 ```bash
 # Train on the Kaggle dataset
-python models_training.py
+python3 models_training.py
 
 # To train on the generated dataset, edit the load_data() to use "house_prices1.csv".
 ```
@@ -48,7 +48,7 @@ python models_training.py
 Edit the `house` dict at the bottom of `predict.py`, then run:
 
 ```bash
-python predict.py
+python3 predict.py
 ```
 
 ### 3. Run the web app
@@ -56,7 +56,7 @@ python predict.py
 Requires models to be trained first.
 
 ```bash
-python app.py
+python3 app.py
 ```
 
 Open [http://localhost:5000](http://localhost:5000) in your browser.

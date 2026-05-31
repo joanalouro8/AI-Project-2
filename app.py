@@ -97,6 +97,7 @@ def api_predict():
             "lat": float(data.get("lat", 47.56)),
             "long": float(data.get("long", -122.25)),
         }
+        print(house_data)
         
         result = predict_single(house_data, variant)
         return jsonify({
