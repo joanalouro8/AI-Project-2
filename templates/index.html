@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Project 2 - Premium Real Estate Price Valuation</title>
+    <meta name="description" content="State-of-the-art house price predictions powered by advanced machine learning models including LightGBM, Random Forest, Neural Networks, and more.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-container">
+        
+        <header class="app-header">
+            <div class="brand">
+                <div>
+                    <h1 class="brand-name">AI Project 2</h1>
+                    <p class="brand-tagline">Advanced Predictive Valuation Suite</p>
+                </div>
+            </div>
+            
+        </header>
+
+        
+        <main class="app-content">
+            
+            <section class="workspace-panel input-panel">
+                <div class="panel-header">
+                    <h2>House Specifications</h2>
+                    <p>Provide details below to generate real-time evaluations</p>
+                </div>
+                
+                <form id="valuation-form" class="spec-form">
+                    
+                    <!-- Predefined House Archetypes Section -->
+                    <div class="presets-section">
+                        <div class="form-section-title" style="margin-top: 0;">Predefined House Archetypes</div>
+                        <p class="presets-intro-text">Select an archetype to instantly populate all housing specifications, then run the evaluation or customize specific parameters.</p>
+                        
+                        <div class="presets-grid" id="presets-container">
+                            <!-- Dynamically generated preset cards will be inserted here by JS -->
+                        </div>
+                    </div>
+                    <div class="form-section-title">Model & Dataset Settings</div>
+                    <div class="form-grid cols-2">
+                        <div class="form-group">
+                            <label for="model-selector">Target Model</label>
+                            <select id="model-selector" class="form-select">
+                                <option value="All Models" selected>Compare All Models (Recommended)</option>
+                                <option value="LightGBM">LightGBM (Fast & Accurate)</option>
+                                <option value="Random Forest">Random Forest (Robust Ensemble)</option>
+                                <option value="Neural Network">Neural Network (Deep MLP)</option>
+                                <option value="SVR">Support Vector Regression (SVR)</option>
+                                <option value="KNN">K-Nearest Neighbors (KNN)</option>
+                                <option value="Linear Regression">Linear Regression (Baseline)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="variant-selector">Model Dataset Version</label>
+                            <select id="variant-selector" class="form-select">
+                                <option value="" selected>Standard Dataset Models</option>
+                                <option value="1">Generated Dataset Models</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    
+                    <div class="form-section-title">Property Details</div>
+                    <div class="form-grid cols-3">
+                        <div class="form-group">
+                            <label for="input-bedrooms">Bedrooms</label>
+                            <div class="number-input-wrapper">
+                                <button type="button" class="num-btn decrease" data-target="input-bedrooms">-</button>
+                                <input type="number" id="input-bedrooms" name="bedrooms" min="0" max="20" value="3" required>
+                                <button type="button" class="num-btn increase" data-target="input-bedrooms">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-bathrooms">Bathrooms</label>
+                            <div class="number-input-wrapper">
+                                <button type="button" class="num-btn decrease" data-target="input-bathrooms">-</button>
+                                <input type="number" id="input-bathrooms" name="bathrooms" min="0" max="10" step="1" value="2" required>
+                                <button type="button" class="num-btn increase" data-target="input-bathrooms">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-floors">Floors</label>
+                            <div class="number-input-wrapper">
+                                <button type="button" class="num-btn decrease" data-target="input-floors">-</button>
+                                <input type="number" id="input-floors" name="floors" min="1" max="4" step="1" value="1" required>
+                                <button type="button" class="num-btn increase" data-target="input-floors">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid cols-2">
+                        <div class="form-group">
+                            <label for="input-waterfront">Waterfront Location</label>
+                            <div class="radio-pill-group">
+                                <input type="radio" id="waterfront-no" name="waterfront" value="N" checked>
+                                <label for="waterfront-no" class="pill-label">No</label>
+                                
+                                <input type="radio" id="waterfront-yes" name="waterfront" value="Y">
+                                <label for="waterfront-yes" class="pill-label">Yes</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-view">View Quality</label>
+                            <select id="input-view" name="view" class="form-select">
+                                <option value="0" selected>0 - No View</option>
+                                <option value="1">1 - Fair View</option>
+                                <option value="2">2 - Average View</option>
+                                <option value="3">3 - Good View</option>
+                                <option value="4">4 - Premium View</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid cols-2">
+                        <div class="form-group">
+                            <label for="input-condition">Overall Condition</label>
+                            <select id="input-condition" name="condition" class="form-select">
+                                <option value="Poor">Poor</option>
+                                <option value="Fair">Fair</option>
+                                <option value="Average" selected>Average</option>
+                                <option value="Good">Good</option>
+                                <option value="Very Good">Very Good</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-grade">Construction Grade</label>
+                            <div class="grade-slider-container">
+                                <input type="range" id="input-grade" name="grade" min="1" max="13" value="7" class="form-slider">
+                                <div class="slider-badge"><span id="grade-badge-val">7</span>/13</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="form-section-title">Area Metrics (Square Feet)</div>
+                    <div class="form-grid cols-2">
+                        <div class="form-group input-with-unit">
+                            <label for="input-sqft-living">Total Living Area</label>
+                            <input type="number" id="input-sqft-living" name="sqft_living" min="100" max="20000" value="1800" required>
+                            <span class="unit">sq ft</span>
+                        </div>
+                        <div class="form-group input-with-unit">
+                            <label for="input-sqft-lot">Total Lot Size</label>
+                            <input type="number" id="input-sqft-lot" name="sqft_lot" min="100" max="1000000" value="5000" required>
+                            <span class="unit">sq ft</span>
+                        </div>
+                    </div>
+                    <div class="form-grid cols-2">
+                        <div class="form-group input-with-unit">
+                            <label for="input-sqft-above">Above-Ground Area</label>
+                            <input type="number" id="input-sqft-above" name="sqft_above" min="100" max="20000" value="1800" required>
+                            <span class="unit">sq ft</span>
+                        </div>
+                        <div class="form-group input-with-unit">
+                            <label for="input-sqft-basement">Basement Area</label>
+                            <input type="number" id="input-sqft-basement" name="sqft_basement" min="0" max="10000" value="0" required>
+                            <span class="unit">sq ft</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="form-section-title">Location & History</div>
+                    <div class="form-grid cols-2">
+                        <div class="form-group">
+                            <label for="input-lat">Latitude</label>
+                            <input type="number" id="input-lat" name="lat" step="any" value="47.5600" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-long">Longitude</label>
+                            <input type="number" id="input-long" name="long" step="any" value="-122.2500" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid cols-2">
+                        <div class="form-group">
+                            <label for="input-yr-built">Year Built</label>
+                            <input type="number" id="input-yr-built" name="yr_built" min="1800" max="2026" value="1980" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-yr-renovated">Year Renovated</label>
+                            <input type="number" id="input-yr-renovated" name="yr_renovated" min="0" max="2026" value="0" required>
+                            <small class="form-help">Enter 0 if never renovated</small>
+                        </div>
+                    </div>
+
+                    
+                    <button type="submit" class="btn btn-primary submit-btn" id="btn-submit">
+                        <span>Evaluate Valuation</span>
+                        <div class="btn-glow-layer"></div>
+                    </button>
+                </form>
+            </section>
+
+            
+            <section class="workspace-panel results-panel">
+                
+                <div class="placeholder-state" id="results-placeholder">
+                    <div class="placeholder-icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12a2.25 2.25 0 012.25 2.25V21M3 3V2.25A2.25 2.25 0 015.25 0h7.5A2.25 2.25 0 0115 2.25V3M9 6v3.375c0 .621.504 1.125 1.125 1.125h2.25c.621 0 1.125-.504 1.125-1.125V6M9 6v3.375m0-3.375h3.75"/>
+                        </svg>
+                    </div>
+                    <h3>Awaiting Evaluation</h3>
+                    <p>Fill in the property details on the left and click <strong>Evaluate Valuation</strong> to generate real-time AI price predictions.</p>
+                </div>
+
+                
+                <div class="loading-state hidden" id="results-loading">
+                    <div class="spinner"></div>
+                    <h3>Consulting AI Ensemble</h3>
+                    <p>Executing machine learning models, scaling features, and calculating real-time predictions...</p>
+                </div>
+
+                
+                <div class="results-display hidden" id="results-content">
+                    <div class="panel-header">
+                        <h2>Valuation Summary</h2>
+                        <p id="variant-badge" class="badge">Standard Dataset Models</p>
+                    </div>
+
+                    
+                    <div class="price-hero-card">
+                        <div class="hero-label" id="primary-model-label">Estimated Valuation</div>
+                        <div class="hero-price" id="primary-price-val">$0</div>
+                        <div class="price-sub-row">
+                            <span class="model-badge" id="primary-model-badge">Model Name</span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="chart-container">
+                        <h4>Model Ensemble Comparison</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="predictionChart"></canvas>
+                        </div>
+                    </div>
+
+                    
+                    <div class="derived-metrics-section">
+                        <h4>Calculated Engine Metrics</h4>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">Estimated Price per Sq Ft</div>
+                                <div class="metric-val" id="val-price-per-sqft">$0.00</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Property Age</div>
+                                <div class="metric-val" id="val-derived-age">0 years</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Years Since Renovation</div>
+                                <div class="metric-val" id="val-derived-renov">0 years</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Bathrooms per Bedroom</div>
+                                <div class="metric-val" id="val-derived-bathbed">0.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="detailed-table-container">
+                        <h4>Model Details Breakdowns</h4>
+                        <table class="details-table" id="models-prediction-table">
+                            <thead>
+                                <tr>
+                                    <th>Model Model</th>
+                                    <th class="text-right">Valuation Prediction</th>
+                                    <th class="text-right">Price Delta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
