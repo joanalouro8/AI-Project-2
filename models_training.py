@@ -17,10 +17,10 @@ from sklearn.model_selection import KFold, cross_validate
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVR
-from lightgbm import LGBMRegressor
 from sklearn.preprocessing import RobustScaler
+from sklearn.svm import SVR
+from sklearn.inspection import permutation_importance
+from lightgbm import LGBMRegressor
 
 CURRENT_YEAR = 2026
 
@@ -72,8 +72,8 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def load_data() -> tuple[pd.DataFrame, np.ndarray]:
-    df = pd.read_csv("house_prices.csv")
+def load_data(dataset: str) -> tuple[pd.DataFrame, np.ndarray]:
+    df = pd.read_csv(dataset)
     df = build_features(df)
 
     X = df[FEATURES].replace([np.inf, -np.inf], np.nan)
@@ -136,12 +136,12 @@ def create_models() -> dict:
                 (
                     "model",
                     MLPRegressor(
-                        hidden_layer_sizes=(256, 128, 64, 32),  # deeper
+                        hidden_layer_sizes=(256, 128, 64, 32),
                         activation="relu",
                         solver="adam",
-                        learning_rate="adaptive",  # reduces lr when stuck
+                        learning_rate="adaptive",
                         learning_rate_init=0.001,
-                        alpha=0.1,  # much stronger regularization
+                        alpha=0.1,
                         max_iter=1000,
                         early_stopping=True,
                         validation_fraction=0.15,
@@ -153,19 +153,19 @@ def create_models() -> dict:
         ),
         "SVR": Pipeline(
             [
-                ("scaler", StandardScaler()),
+                ("scaler", RobustScaler()),
                 ("model", SVR(kernel="rbf", C=100, gamma="scale", epsilon=0.1)),
             ]
         ),
         "KNN": Pipeline(
             [
-                ("scaler", StandardScaler()),
+                ("scaler", RobustScaler()),
                 ("model", KNeighborsRegressor(n_neighbors=8, weights="distance")),
             ]
         ),
         "Linear Regression": Pipeline(
             [
-                ("scaler", StandardScaler()),
+                ("scaler", RobustScaler()),
                 ("model", LinearRegression()),
             ]
         ),
@@ -235,25 +235,58 @@ def print_results(results: list[dict], k: int = 5) -> None:
     print(folds.to_string())
 
 
+def get_feature_importance(model, X, y, name: str) -> pd.Series:
+    """Extract feature importance depending on model type."""
+    if isinstance(model, (LGBMRegressor, RandomForestRegressor)):
+        importance = model.feature_importances_
+
+    elif isinstance(model, Pipeline) and isinstance(
+        model.named_steps["model"], LinearRegression
+    ):
+        importance = np.abs(model.named_steps["model"].coef_)
+
+    else:
+        result = permutation_importance(model, X, y, n_repeats=10, random_state=42, n_jobs=2)
+        importance = result["importances_mean"]
+
+    series = pd.Series(importance, index=FEATURES, name=name)
+    return series / series.abs().sum() 
+
+
+def print_feature_importances(models: dict, X, y) -> None:
+    print("\nFeature Importances (normalised):\n")
+    all_importances = {}
+
+    for name, model in models.items():
+        all_importances[name] = get_feature_importance(model, X, y, name)
+
+    df = pd.DataFrame(all_importances)
+    df["mean"] = df.mean(axis=1)
+    df = df.sort_values("mean", ascending=False).drop(columns="mean")
+
+    print(df.round(4).to_string())
+
+
 def save_models(models: dict, X, y) -> None:
     os.makedirs("models", exist_ok=True)
 
     for name, model in models.items():
         model.fit(X, y)
         filename = name.lower().replace(" ", "_")
-        joblib.dump(model, f"models/{filename}.pkl")
+        joblib.dump(model, f"models/{filename}1.pkl")
 
     joblib.dump(FEATURES, "models/features.pkl")
 
 
 def main() -> None:
-    X, y = load_data()
+    X, y = load_data("house_prices1.csv")
     models = create_models()
     scorers = create_scorers()
 
     results = evaluate_models(models, X, y, scorers)
     print_results(results)
     save_models(models, X, y)
+    print_feature_importances(models, X, y)
 
 
 if __name__ == "__main__":

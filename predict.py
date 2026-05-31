@@ -2,7 +2,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from cross_validation import FEATURES, build_features
+from models_training import build_features
 
 MODEL_FILES = {
     "Linear Regression": "linear_regression",
@@ -49,22 +49,23 @@ def print_predictions(predictions: dict[str, float]) -> None:
 
 
 if __name__ == "__main__":
+
     house = {
         "bedrooms": 4,
-        "bathrooms": 3,
+        "bathrooms": 2,
         "floors": 2,
-        "sqft_living": 2800,
-        "sqft_lot": 9000,
-        "sqft_above": 2200,
-        "sqft_basement": 600,
-        "waterfront": 0,
-        "view": 1,
-        "condition": 3,
-        "grade": 9,
-        "yr_built": 1990,
-        "yr_renovated": 0,
-        "lat": 47.5085,
-        "long": -122.2440,
+        "sqft_living": 2590,
+        "sqft_lot": 3750,
+        "sqft_above": 2590,
+        "sqft_basement": 0,
+        "waterfront": "N",
+        "view": 3,
+        "condition": "Very Good",
+        "grade": 11,
+        "yr_built": 1922,
+        "yr_renovated": 1922,
+        "lat": 47.6737467,
+        "long": -122.2961433,
     }
 
     print_predictions(predict(house))
