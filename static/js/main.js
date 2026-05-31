@@ -2,10 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const form = document.getElementById("valuation-form");
     const btnSubmit = document.getElementById("btn-submit");
-    const btnLoadExample = document.getElementById("btn-load-example");
     const gradeSlider = document.getElementById("input-grade");
     const gradeBadge = document.getElementById("grade-badge-val");
-    const locationPreset = document.getElementById("preset-location");
     const latInput = document.getElementById("input-lat");
     const longInput = document.getElementById("input-long");
     
@@ -33,31 +31,165 @@ document.addEventListener("DOMContentLoaded", () => {
     let chartInstance = null;
 
     
-    const COORDINATE_PRESETS = {
-        "seattle_dt": { lat: 47.6062, long: -122.3321 },
-        "bellevue": { lat: 47.6101, long: -122.1201 },
-        "redmond": { lat: 47.6740, long: -122.1215 },
-        "kirkland": { lat: 47.6769, long: -122.2060 },
-        "tacoma": { lat: 47.2529, long: -122.4443 }
-    };
-
-    
-    const SAMPLE_HOUSE = {
-        bedrooms: 4,
-        bathrooms: 3,
-        floors: 2,
-        sqft_living: 2800,
-        sqft_lot: 9000,
-        sqft_above: 2200,
-        sqft_basement: 600,
-        waterfront: "N",
-        view: "1",
-        condition: "Average",
-        grade: 9,
-        yr_built: 1990,
-        yr_renovated: 0,
-        lat: 47.5085,
-        long: -122.2440
+    const HOUSE_PRESETS = {
+        "suburban": {
+            title: "Suburban Family",
+            desc: "3 Bed • 2 Bath • 2,200 sq ft",
+            tagText: "Popular",
+            tagClass: "tag-primary",
+            iconSvg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                      </svg>`,
+            bedrooms: 3,
+            bathrooms: 2,
+            floors: 2,
+            sqft_living: 2200,
+            sqft_lot: 6500,
+            sqft_above: 1800,
+            sqft_basement: 400,
+            waterfront: "N",
+            view: 0,
+            condition: "Average",
+            grade: 8,
+            yr_built: 1994,
+            yr_renovated: 0,
+            lat: 47.6740,
+            long: -122.1215
+        },
+        "luxury": {
+            title: "Waterfront Villa",
+            desc: "5 Bed • 4 Bath • 5,400 sq ft",
+            tagText: "Premium",
+            tagClass: "tag-accent",
+            iconSvg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 22h20"></path>
+                        <path d="M3 17l4-4h10l4 4"></path>
+                        <path d="M5 13V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8"></path>
+                        <path d="M9 13v-3h6v3"></path>
+                      </svg>`,
+            bedrooms: 5,
+            bathrooms: 4,
+            floors: 2,
+            sqft_living: 5400,
+            sqft_lot: 18000,
+            sqft_above: 4200,
+            sqft_basement: 1200,
+            waterfront: "Y",
+            view: 4,
+            condition: "Very Good",
+            grade: 11,
+            yr_built: 2008,
+            yr_renovated: 2018,
+            lat: 47.6101,
+            long: -122.1201
+        },
+        "condo": {
+            title: "Downtown Condo",
+            desc: "2 Bed • 2 Bath • 1,150 sq ft",
+            tagText: "Urban",
+            tagClass: "tag-secondary",
+            iconSvg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                        <line x1="9" y1="22" x2="9" y2="16"></line>
+                        <line x1="15" y1="22" x2="15" y2="16"></line>
+                        <line x1="9" y1="16" x2="15" y2="16"></line>
+                        <path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zm-6 5h2v2H8v-2zm6 0h2v2h-2v-2z"></path>
+                      </svg>`,
+            bedrooms: 2,
+            bathrooms: 2,
+            floors: 1,
+            sqft_living: 1150,
+            sqft_lot: 1000,
+            sqft_above: 1150,
+            sqft_basement: 0,
+            waterfront: "N",
+            view: 2,
+            condition: "Good",
+            grade: 9,
+            yr_built: 2016,
+            yr_renovated: 0,
+            lat: 47.6062,
+            long: -122.3321
+        },
+        "cottage": {
+            title: "Woodland Cabin",
+            desc: "2 Bed • 1 Bath • 980 sq ft",
+            tagText: "Rustic",
+            tagClass: "tag-warning",
+            iconSvg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 12h3v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8h3L12 2z"></path>
+                        <path d="M9 22V12h6v10"></path>
+                      </svg>`,
+            bedrooms: 2,
+            bathrooms: 1,
+            floors: 1,
+            sqft_living: 980,
+            sqft_lot: 35000,
+            sqft_above: 980,
+            sqft_basement: 0,
+            waterfront: "N",
+            view: 1,
+            condition: "Very Good",
+            grade: 6,
+            yr_built: 1952,
+            yr_renovated: 1998,
+            lat: 47.2529,
+            long: -122.4443
+        },
+        "townhouse": {
+            title: "Urban Townhouse",
+            desc: "3 Bed • 2 Bath • 1,850 sq ft",
+            tagText: "Modern",
+            tagClass: "tag-light",
+            iconSvg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 21h18"></path>
+                        <path d="M5 21V7l7-4v18"></path>
+                        <path d="M19 21V11l-7-4v14"></path>
+                        <path d="M9 11h2v2H9v-2zm0 4h2v2H9v-2zm6-4h2v2h-2v-2zm0 4h2v2h-2v-2z"></path>
+                      </svg>`,
+            bedrooms: 3,
+            bathrooms: 2,
+            floors: 3,
+            sqft_living: 1850,
+            sqft_lot: 2200,
+            sqft_above: 1550,
+            sqft_basement: 300,
+            waterfront: "N",
+            view: 0,
+            condition: "Good",
+            grade: 8,
+            yr_built: 2005,
+            yr_renovated: 0,
+            lat: 47.6769,
+            long: -122.2060
+        },
+        "manor": {
+            title: "Country Manor",
+            desc: "4 Bed • 3 Bath • 3,600 sq ft",
+            tagText: "Elite",
+            tagClass: "tag-rose",
+            iconSvg: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22V12h10V9H2v3h10"></path>
+                        <path d="M6 12v10h12V12"></path>
+                        <path d="M12 2L4 9h16L12 2z"></path>
+                      </svg>`,
+            bedrooms: 4,
+            bathrooms: 3,
+            floors: 2,
+            sqft_living: 3600,
+            sqft_lot: 85000,
+            sqft_above: 3000,
+            sqft_basement: 600,
+            waterfront: "N",
+            view: 3,
+            condition: "Good",
+            grade: 10,
+            yr_built: 1988,
+            yr_renovated: 2012,
+            lat: 47.5600,
+            long: -122.2500
+        }
     };
 
     
@@ -92,58 +224,98 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     
-    locationPreset.addEventListener("change", (e) => {
-        const presetKey = e.target.value;
-        if (presetKey && COORDINATE_PRESETS[presetKey]) {
-            const coords = COORDINATE_PRESETS[presetKey];
-            latInput.value = coords.lat.toFixed(4);
-            longInput.value = coords.long.toFixed(4);
-        }
-    });
-
-    
-    [latInput, longInput].forEach(elem => {
-        elem.addEventListener("input", () => {
-            locationPreset.value = "custom";
-        });
-    });
-
-    
-    btnLoadExample.addEventListener("click", () => {
+    function applyHousePreset(presetKey) {
+        const preset = HOUSE_PRESETS[presetKey];
+        if (!preset) return;
         
-        document.getElementById("input-bedrooms").value = SAMPLE_HOUSE.bedrooms;
-        document.getElementById("input-bathrooms").value = SAMPLE_HOUSE.bathrooms.toFixed(2);
-        document.getElementById("input-floors").value = SAMPLE_HOUSE.floors.toFixed(1);
+        document.getElementById("input-bedrooms").value = preset.bedrooms;
+        document.getElementById("input-bathrooms").value = preset.bathrooms;
+        document.getElementById("input-floors").value = preset.floors;
         
-        if (SAMPLE_HOUSE.waterfront === "Y") {
+        if (preset.waterfront === "Y") {
             document.getElementById("waterfront-yes").checked = true;
         } else {
             document.getElementById("waterfront-no").checked = true;
         }
         
-        document.getElementById("input-view").value = SAMPLE_HOUSE.view;
-        document.getElementById("input-condition").value = SAMPLE_HOUSE.condition;
+        document.getElementById("input-view").value = preset.view;
+        document.getElementById("input-condition").value = preset.condition;
         
-        gradeSlider.value = SAMPLE_HOUSE.grade;
-        gradeBadge.textContent = SAMPLE_HOUSE.grade;
+        gradeSlider.value = preset.grade;
+        gradeBadge.textContent = preset.grade;
         
-        document.getElementById("input-sqft-living").value = SAMPLE_HOUSE.sqft_living;
-        document.getElementById("input-sqft-lot").value = SAMPLE_HOUSE.sqft_lot;
-        document.getElementById("input-sqft-above").value = SAMPLE_HOUSE.sqft_above;
-        document.getElementById("input-sqft-basement").value = SAMPLE_HOUSE.sqft_basement;
+        document.getElementById("input-sqft-living").value = preset.sqft_living;
+        document.getElementById("input-sqft-lot").value = preset.sqft_lot;
+        document.getElementById("input-sqft-above").value = preset.sqft_above;
+        document.getElementById("input-sqft-basement").value = preset.sqft_basement;
         
-        locationPreset.value = "custom";
-        latInput.value = SAMPLE_HOUSE.lat.toFixed(4);
-        longInput.value = SAMPLE_HOUSE.long.toFixed(4);
+        latInput.value = preset.lat.toFixed(4);
+        longInput.value = preset.long.toFixed(4);
         
-        document.getElementById("input-yr-built").value = SAMPLE_HOUSE.yr_built;
-        document.getElementById("input-yr-renovated").value = SAMPLE_HOUSE.yr_renovated;
-        
+        document.getElementById("input-yr-built").value = preset.yr_built;
+        document.getElementById("input-yr-renovated").value = preset.yr_renovated;
         
         form.style.borderColor = "var(--color-primary)";
+        form.style.boxShadow = "0 0 20px rgba(59, 130, 246, 0.15)";
         setTimeout(() => {
             form.style.borderColor = "var(--border-color)";
-        }, 1000);
+            form.style.boxShadow = "var(--glow-shadow), var(--card-glow)";
+        }, 800);
+    }
+    
+    // Dynamically render preset cards from metadata
+    const presetsContainer = document.getElementById("presets-container");
+    
+    function renderPresetCards() {
+        if (!presetsContainer) return;
+        presetsContainer.innerHTML = "";
+        
+        Object.entries(HOUSE_PRESETS).forEach(([key, preset], index) => {
+            const card = document.createElement("div");
+            card.className = `preset-card${index === 0 ? " active" : ""}`;
+            card.setAttribute("data-preset", key);
+            card.setAttribute("tabindex", "0");
+            
+            card.innerHTML = `
+                <span class="preset-tag ${preset.tagClass}">${preset.tagText}</span>
+                <div class="preset-icon">
+                    ${preset.iconSvg}
+                </div>
+                <h4 class="preset-title">${preset.title}</h4>
+                <p class="preset-desc">${preset.desc}</p>
+            `;
+            
+            card.addEventListener("click", () => {
+                document.querySelectorAll(".preset-card").forEach(c => c.classList.remove("active"));
+                card.classList.add("active");
+                applyHousePreset(key);
+            });
+            
+            card.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    card.click();
+                }
+            });
+            
+            presetsContainer.appendChild(card);
+        });
+    }
+
+    renderPresetCards();
+
+    const formInputs = form.querySelectorAll("input, select");
+    formInputs.forEach(input => {
+        input.addEventListener("input", (e) => {
+            if (e.isTrusted) {
+                document.querySelectorAll(".preset-card").forEach(c => c.classList.remove("active"));
+            }
+        });
+        input.addEventListener("change", (e) => {
+            if (e.isTrusted) {
+                document.querySelectorAll(".preset-card").forEach(c => c.classList.remove("active"));
+            }
+        });
     });
 
     

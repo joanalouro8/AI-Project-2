@@ -82,8 +82,8 @@ def api_predict():
         
         house_data = {
             "bedrooms": int(data.get("bedrooms", 3)),
-            "bathrooms": float(data.get("bathrooms", 2.0)),
-            "floors": float(data.get("floors", 1.0)),
+            "bathrooms": int(data.get("bathrooms", 2)),
+            "floors": int(data.get("floors", 1)),
             "sqft_living": int(data.get("sqft_living", 1800)),
             "sqft_lot": int(data.get("sqft_lot", 5000)),
             "sqft_above": int(data.get("sqft_above", 1500)),

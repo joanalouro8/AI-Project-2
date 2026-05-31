@@ -30,12 +30,6 @@
                 </div>
             </div>
             
-            <div class="header-actions">
-                <button type="button" class="btn btn-secondary fill-preset-btn" id="btn-load-example">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    Load Sample House
-                </button>
-            </div>
         </header>
 
         
@@ -49,7 +43,15 @@
                 
                 <form id="valuation-form" class="spec-form">
                     
-                    
+                    <!-- Predefined House Archetypes Section -->
+                    <div class="presets-section">
+                        <div class="form-section-title" style="margin-top: 0;">Predefined House Archetypes</div>
+                        <p class="presets-intro-text">Select an archetype to instantly populate all housing specifications, then run the evaluation or customize specific parameters.</p>
+                        
+                        <div class="presets-grid" id="presets-container">
+                            <!-- Dynamically generated preset cards will be inserted here by JS -->
+                        </div>
+                    </div>
                     <div class="form-section-title">Model & Dataset Settings</div>
                     <div class="form-grid cols-2">
                         <div class="form-group">
@@ -68,7 +70,7 @@
                             <label for="variant-selector">Model Dataset Version</label>
                             <select id="variant-selector" class="form-select">
                                 <option value="" selected>Standard Dataset Models</option>
-                                <option value="1">Enhanced Dataset Models (Variant 1)</option>
+                                <option value="1">Generated Dataset Models</option>
                             </select>
                         </div>
                     </div>
@@ -87,17 +89,17 @@
                         <div class="form-group">
                             <label for="input-bathrooms">Bathrooms</label>
                             <div class="number-input-wrapper">
-                                <button type="button" class="num-btn decrease" data-target="input-bathrooms" data-step="0.25">-</button>
-                                <input type="number" id="input-bathrooms" name="bathrooms" min="0" max="10" step="0.25" value="2.00" required>
-                                <button type="button" class="num-btn increase" data-target="input-bathrooms" data-step="0.25">+</button>
+                                <button type="button" class="num-btn decrease" data-target="input-bathrooms">-</button>
+                                <input type="number" id="input-bathrooms" name="bathrooms" min="0" max="10" step="1" value="2" required>
+                                <button type="button" class="num-btn increase" data-target="input-bathrooms">+</button>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="input-floors">Floors</label>
                             <div class="number-input-wrapper">
-                                <button type="button" class="num-btn decrease" data-target="input-floors" data-step="0.5">-</button>
-                                <input type="number" id="input-floors" name="floors" min="1" max="4" step="0.5" value="1.0" required>
-                                <button type="button" class="num-btn increase" data-target="input-floors" data-step="0.5">+</button>
+                                <button type="button" class="num-btn decrease" data-target="input-floors">-</button>
+                                <input type="number" id="input-floors" name="floors" min="1" max="4" step="1" value="1" required>
+                                <button type="button" class="num-btn increase" data-target="input-floors">+</button>
                             </div>
                         </div>
                     </div>
@@ -174,18 +176,7 @@
 
                     
                     <div class="form-section-title">Location & History</div>
-                    <div class="form-grid cols-3">
-                        <div class="form-group">
-                            <label for="preset-location">Quick Location Preset</label>
-                            <select id="preset-location" class="form-select">
-                                <option value="custom" selected>Custom Coordinates</option>
-                                <option value="seattle_dt">Seattle (Downtown)</option>
-                                <option value="bellevue">Bellevue</option>
-                                <option value="redmond">Redmond</option>
-                                <option value="kirkland">Kirkland</option>
-                                <option value="tacoma">Tacoma</option>
-                            </select>
-                        </div>
+                    <div class="form-grid cols-2">
                         <div class="form-group">
                             <label for="input-lat">Latitude</label>
                             <input type="number" id="input-lat" name="lat" step="0.0001" min="47.0" max="48.0" value="47.5600" required>
